@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    border-color: hsl(215 20% 20%);
+  }
+  
+  body {
+    background-color: hsl(215 20% 12%);
+    color: hsl(0 0% 95%);
+  }
+}
+
+@layer components {
+  .gradient-bg {
+    background: linear-gradient(135deg, hsl(220 100% 50% / 0.1) 0%, hsl(180 80% 45% / 0.1) 100%);
+  }
+  
+  .glass-effect {
+    backdrop-filter: blur(8px);
+    background: hsl(215 20% 16% / 0.8);
+    border: 1px solid hsl(215 20% 20%);
+  }
+}
