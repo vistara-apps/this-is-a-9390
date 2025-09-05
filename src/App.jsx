@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import AppShell from './components/AppShell';
 import NetworkDirectory from './components/NetworkDirectory';
 import UnifiedFeed from './components/UnifiedFeed';
+import ErrorBoundary from './components/ui/ErrorBoundary';
 import { NetworkProvider } from './contexts/NetworkContext';
+import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
   const [activeTab, setActiveTab] = useState('directory');
@@ -19,11 +21,15 @@ function App() {
   };
 
   return (
-    <NetworkProvider>
-      <AppShell activeTab={activeTab} onTabChange={setActiveTab}>
-        {renderContent()}
-      </AppShell>
-    </NetworkProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <NetworkProvider>
+          <AppShell activeTab={activeTab} onTabChange={setActiveTab}>
+            {renderContent()}
+          </AppShell>
+        </NetworkProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
