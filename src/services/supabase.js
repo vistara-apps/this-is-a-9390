@@ -1,16 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase configuration
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://demo.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'demo-anon-key';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
-  }
-});
+// Check if we have valid Supabase configuration
+const hasValidSupabaseConfig = 
+  supabaseUrl !== 'https://demo.supabase.co' && 
+  supabaseAnonKey !== 'demo-anon-key' &&
+  supabaseUrl.includes('supabase.co');
+
+export const supabase = hasValidSupabaseConfig 
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+      }
+    })
+  : null;
 
 // Database schema types
 export const TABLES = {
@@ -25,6 +33,11 @@ export const TABLES = {
 export const userService = {
   // Get current user profile
   async getCurrentUser() {
+    if (!supabase) {
+      console.warn('Supabase not configured, returning null user');
+      return null;
+    }
+    
     const { data: { user }, error } = await supabase.auth.getUser();
     if (error) throw error;
     
@@ -47,6 +60,11 @@ export const userService = {
 
   // Create or update user profile
   async upsertProfile(userId, profileData) {
+    if (!supabase) {
+      console.warn('Supabase not configured, skipping profile upsert');
+      return null;
+    }
+    
     const { data, error } = await supabase
       .from(TABLES.USERS)
       .upsert({
@@ -134,6 +152,11 @@ export const userService = {
 export const authService = {
   // Sign in with wallet (used with RainbowKit)
   async signInWithWallet(walletAddress, signature) {
+    if (!supabase) {
+      console.warn('Supabase not configured, skipping wallet authentication');
+      return { user: null, session: null };
+    }
+    
     // This would typically verify the signature and create a session
     // For now, we'll use Supabase's built-in auth with a custom provider
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -147,12 +170,22 @@ export const authService = {
 
   // Sign out
   async signOut() {
+    if (!supabase) {
+      console.warn('Supabase not configured, skipping sign out');
+      return;
+    }
+    
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   },
 
   // Get current session
   async getSession() {
+    if (!supabase) {
+      console.warn('Supabase not configured, returning null session');
+      return null;
+    }
+    
     const { data: { session }, error } = await supabase.auth.getSession();
     if (error) throw error;
     return session;
@@ -160,6 +193,11 @@ export const authService = {
 
   // Listen to auth changes
   onAuthStateChange(callback) {
+    if (!supabase) {
+      console.warn('Supabase not configured, returning mock subscription');
+      return { data: { subscription: { unsubscribe: () => {} } } };
+    }
+    
     return supabase.auth.onAuthStateChange(callback);
   }
 };

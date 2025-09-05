@@ -26,9 +26,9 @@ jobs:
       run: npm run build
       env:
         NODE_OPTIONS: --max-old-space-size=4096
-        VITE_SUPABASE_URL: https://placeholder.supabase.co
-        VITE_SUPABASE_ANON_KEY: placeholder-key
-        VITE_WALLETCONNECT_PROJECT_ID: 9f4bd472c01ba49282b42e5e1874c2af
+        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://demo.supabase.co' }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'demo-anon-key' }}
+        VITE_WALLETCONNECT_PROJECT_ID: ${{ secrets.VITE_WALLETCONNECT_PROJECT_ID || '9f4bd472c01ba49282b42e5e1874c2af' }}
         
     - name: Deploy to Vercel (Production)
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
@@ -38,6 +38,10 @@ jobs:
         vercel-args: '--prod'
         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+      env:
+        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://demo.supabase.co' }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'demo-anon-key' }}
+        VITE_WALLETCONNECT_PROJECT_ID: ${{ secrets.VITE_WALLETCONNECT_PROJECT_ID || '9f4bd472c01ba49282b42e5e1874c2af' }}
       continue-on-error: true
         
     - name: Deploy to Vercel (Preview)
@@ -48,6 +52,10 @@ jobs:
         vercel-args: '--no-wait'
         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+      env:
+        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://demo.supabase.co' }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'demo-anon-key' }}
+        VITE_WALLETCONNECT_PROJECT_ID: ${{ secrets.VITE_WALLETCONNECT_PROJECT_ID || '9f4bd472c01ba49282b42e5e1874c2af' }}
       continue-on-error: true
         
     - name: Comment PR with deployment URL
